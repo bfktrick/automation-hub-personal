@@ -1,0 +1,56 @@
+# Stage 1: Build con Node.js
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Instalar OpenSSL (requerido por Prisma)
+RUN apk add --no-cache openssl
+
+# Copiar package files
+COPY package*.json ./
+
+# Instalar dependencias (incluyendo devDependencies para build)
+RUN npm ci
+
+# Copiar código fuente
+COPY . .
+
+# Generar cliente de Prisma
+RUN npx prisma generate
+
+# Compilar la aplicación NestJS
+RUN npm run build
+
+# Stage 2: Runtime
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Instalar solo las herramientas necesarias para runtime
+RUN apk add --no-cache openssl dumb-init
+
+# Copiar package files
+COPY package*.json ./
+
+# Instalar solo dependencias de producción
+RUN npm ci --only=production
+
+# Copiar schema de Prisma desde builder
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
+
+# Copiar código compilado desde builder
+COPY --from=builder /app/dist ./dist
+
+# Exponer puerto
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:5000/api/v1/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Usar dumb-init para manejar señales de terminación correctamente
+ENTRYPOINT ["/usr/sbin/dumb-init", "--"]
+
+# Iniciar la aplicación
+CMD ["node", "dist/main"]

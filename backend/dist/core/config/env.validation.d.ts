@@ -1,0 +1,51 @@
+import { z } from 'zod';
+declare const envSchema: z.ZodObject<{
+    PORT: z.ZodDefault<z.ZodNumber>;
+    NODE_ENV: z.ZodDefault<z.ZodEnum<["development", "production", "test"]>>;
+    LOG_LEVEL: z.ZodDefault<z.ZodEnum<["debug", "info", "warn", "error"]>>;
+    DATABASE_URL: z.ZodString;
+    REDIS_URL: z.ZodDefault<z.ZodString>;
+    CORS_ORIGINS: z.ZodDefault<z.ZodString>;
+    CORS_CREDENTIALS: z.ZodDefault<z.ZodEnum<["true", "false"]>>;
+    RATE_LIMIT: z.ZodDefault<z.ZodNumber>;
+    RATE_TTL: z.ZodDefault<z.ZodNumber>;
+    JWT_SECRET: z.ZodString;
+    JWT_EXPIRATION: z.ZodDefault<z.ZodNumber>;
+    OPENAI_API_KEY: z.ZodOptional<z.ZodString>;
+    TELEGRAM_BOT_TOKEN: z.ZodOptional<z.ZodString>;
+    TELEGRAM_CHAT_ID: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    PORT?: number;
+    NODE_ENV?: "development" | "production" | "test";
+    LOG_LEVEL?: "debug" | "info" | "warn" | "error";
+    DATABASE_URL?: string;
+    REDIS_URL?: string;
+    CORS_ORIGINS?: string;
+    CORS_CREDENTIALS?: "true" | "false";
+    RATE_LIMIT?: number;
+    RATE_TTL?: number;
+    JWT_SECRET?: string;
+    JWT_EXPIRATION?: number;
+    OPENAI_API_KEY?: string;
+    TELEGRAM_BOT_TOKEN?: string;
+    TELEGRAM_CHAT_ID?: string;
+}, {
+    PORT?: number;
+    NODE_ENV?: "development" | "production" | "test";
+    LOG_LEVEL?: "debug" | "info" | "warn" | "error";
+    DATABASE_URL?: string;
+    REDIS_URL?: string;
+    CORS_ORIGINS?: string;
+    CORS_CREDENTIALS?: "true" | "false";
+    RATE_LIMIT?: number;
+    RATE_TTL?: number;
+    JWT_SECRET?: string;
+    JWT_EXPIRATION?: number;
+    OPENAI_API_KEY?: string;
+    TELEGRAM_BOT_TOKEN?: string;
+    TELEGRAM_CHAT_ID?: string;
+}>;
+export type Environment = z.infer<typeof envSchema>;
+export declare function envValidation(config: Record<string, unknown>): Environment;
+export {};
+//# sourceMappingURL=env.validation.d.ts.map
