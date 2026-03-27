@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { CronJob } from '@nestjs/schedule/node_modules/cron';
+import { CronJob } from 'cron';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { JobExecutorService } from './job-executor.service';
 
